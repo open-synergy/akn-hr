@@ -11,7 +11,10 @@ class HrAdvance(models.Model):
     _description = "Employee Advance Request"
     _inherit = [
         "mail.thread",
+        "tier.validation",
     ]
+    _state_from = ["draft", "confirm"]
+    _state_to = ["approve"]
 
     @api.model
     def _default_company_id(self):
@@ -355,6 +358,7 @@ class HrAdvance(models.Model):
     def action_restart(self):
         for document in self:
             document.write(document._prepare_restart_data())
+            document.restart_validation()
 
     @api.multi
     def _prepare_confirm_data(self):
@@ -553,3 +557,11 @@ class HrAdvance(models.Model):
                     raise UserError(strWarning)
         _super = super(HrAdvance, self)
         _super.unlink()
+
+    @api.multi
+    def validate_tier(self):
+        _super = super(HrAdvance, self)
+        _super.validate_tier()
+        for document in self:
+            if document.validated:
+                document.action_approve()

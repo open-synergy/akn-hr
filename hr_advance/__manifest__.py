@@ -4,7 +4,7 @@
 
 {
     "name": "Travel Request",
-    "version": "11.0.0.1.0",
+    "version": "11.0.0.2.0",
     "summary": "Custom Travel Request Form for PT Indoturbine",
     "author": "Arkana, PT. Simetri Sinergi Indonesia",
     "description": """
@@ -17,6 +17,7 @@ Features :
         "project",
         "base_automation",
         "account",
+        "base_tier_validation",
     ],
     "data": [
         "security/ir_module_category_data.xml",

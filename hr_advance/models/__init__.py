@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
+    tier_definition,
     hr_employee,
     hr_advance_type,
     hr_advance,
