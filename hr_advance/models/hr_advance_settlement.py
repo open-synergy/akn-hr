@@ -2,7 +2,8 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class HrAdvanceSettlement(models.Model):
@@ -10,7 +11,10 @@ class HrAdvanceSettlement(models.Model):
     _description = "Employee Advance Settlement"
     _inherit = [
         "mail.thread",
+        "tier.validation",
     ]
+    _state_from = ["draft", "confirm"]
+    _state_to = ["done"]
 
     @api.model
     def _default_company_id(self):
@@ -196,6 +200,7 @@ class HrAdvanceSettlement(models.Model):
     def action_restart(self):
         for document in self:
             document.write(document._prepare_restart_data())
+            document.restart_validation()
 
     @api.multi
     def _prepare_confirm_data(self):
@@ -269,3 +274,11 @@ class HrAdvanceSettlement(models.Model):
                     raise UserError(strWarning)
         _super = super(HrAdvanceSettlement, self)
         _super.unlink()
+
+    @api.multi
+    def validate_tier(self):
+        _super = super(HrAdvanceSettlement, self)
+        _super.validate_tier()
+        for document in self:
+            if document.validated:
+                document.action_approve()
