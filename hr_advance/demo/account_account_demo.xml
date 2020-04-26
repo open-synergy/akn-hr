@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="employe_advance_account" model="account.account">
+    <field name="name">Employee Advance</field>
+    <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+    <field name="code">EA01</field>
+    <field name="reconcile" eval="True"/>
+</record>
+
+<record id="employe_advance_payable_account" model="account.account">
+    <field name="name">Employee Advance Payable</field>
+    <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+    <field name="code">EA02</field>
+    <field name="reconcile" eval="True"/>
+</record>
+</odoo>

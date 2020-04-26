@@ -7,7 +7,7 @@ from odoo import models, fields, api
 
 class HrAdvanceLine(models.Model):
     _name = "hr.advance_line"
-    _description = "Employee Advance Detail"
+    _description = "Employee Advance Request Line"
 
     @api.depends(
         "quantity",
@@ -38,6 +38,13 @@ class HrAdvanceLine(models.Model):
     advance_id = fields.Many2one(
         string="# Advance",
         comodel_name="hr.advance",
+        ondelete="cascade",
+    )
+    employee_id = fields.Many2one(
+        string="Employee",
+        comodel_name="hr.employee",
+        related="advance_id.employee_id",
+        store=True,
     )
     sequence = fields.Integer(
         string="Sequence",
@@ -47,11 +54,6 @@ class HrAdvanceLine(models.Model):
     product_id = fields.Many2one(
         string="Product",
         comodel_name="product.product",
-        required=True,
-    )
-    account_id = fields.Many2one(
-        string="Account",
-        comodel_name="account.account",
         required=True,
     )
     price_unit = fields.Float(
@@ -79,29 +81,12 @@ class HrAdvanceLine(models.Model):
         compute="_compute_price_subtotal",
         store=True,
     )
-
-    @api.multi
-    def _create_account_move_line(self):
-        self.ensure_one()
-        obj_line = self.env["account.move.line"]
-        ctx = {
-            "check_move_validity": False,
-        }
-        obj_line.with_context(ctx).create(
-            self._prepare_account_move_line())
-
-    @api.multi
-    def _prepare_account_move_line(self):
-        self.ensure_one()
-        aa = self.advance_id.project_id.analytic_account_id
-        return {
-            "move_id": self.advance_id.move_id.id,
-            "partner_id": self.advance_id._get_partner().id,
-            "account_id": self.account_id.id,
-            "analytic_account_id": aa and aa.id or False,
-            "credit": 0.0,
-            "debit": self.price_subtotal,
-        }
+    type_id = fields.Many2one(
+        string="Type",
+        comodel_name="hr.advance_type",
+        related="advance_id.type_id",
+        store=False,
+    )
 
     @api.onchange(
         "product_id",

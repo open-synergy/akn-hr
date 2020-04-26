@@ -12,18 +12,34 @@
     />
 
 <menuitem
-    id="employee_advance_configuration_menu"
-    name="Configuration"
+    id="employee_advance_request_root_menu"
+    name="Request"
+    sequence="1"
+    parent="employee_advance_root_menu"
+    />
+
+<menuitem
+    id="employee_advance_settlement_root_menu"
+    name="Settlement"
+    sequence="2"
+    parent="employee_advance_root_menu"
+    />
+
+<menuitem
+    id="employee_advance_reporting_menu"
+    name="Reporting"
     parent="employee_advance_root_menu"
     sequence="98"
     />
 
-    <menuitem
-        id="employee_advance_reporting_menu"
-        name="Reporting"
-        parent="employee_advance_root_menu"
-        sequence="99"
-        />
+<menuitem
+    id="employee_advance_configuration_menu"
+    name="Configuration"
+    parent="employee_advance_root_menu"
+    sequence="99"
+    />
+
+
 
 
 </data>
