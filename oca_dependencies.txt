@@ -16,3 +16,4 @@
 web https://github.com/OCA/web 11.0
 opnsynid-server-tools https://github.com/open-synergy/opnsynid-server-tools 11.0
 server-tools https://github.com/oca/server-tools 11.0
+server-ux https://github.com/oca/server-ux 11.0
