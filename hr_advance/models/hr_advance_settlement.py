@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 
 class HrAdvanceSettlement(models.Model):
     _name = "hr.advance_settlement"
-    _description = "Employee Advance Settlement"
+    _description = "Employee Advance Realization"
     _inherit = [
         "mail.thread",
         "tier.validation",
@@ -100,7 +100,7 @@ class HrAdvanceSettlement(models.Model):
         },
     )
     line_ids = fields.One2many(
-        string="Settlement Details",
+        string="Realization Details",
         comodel_name="hr.advance_settlement_line",
         inverse_name="settlement_id",
         copy=False,

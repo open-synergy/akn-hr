@@ -20,7 +20,7 @@
 
 <menuitem
     id="employee_advance_settlement_root_menu"
-    name="Settlement"
+    name="Realization"
     sequence="2"
     parent="employee_advance_root_menu"
     />
