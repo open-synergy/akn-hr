@@ -470,23 +470,12 @@ class HrAdvance(models.Model):
         }
 
     @api.multi
-    def _get_analytic_account(self):
-        self.ensure_one()
-        result = False
-        project = self.project_id
-        if project:
-            result = project.analytic_account_id
-        return result
-
-    @api.multi
     def _prepare_advance_move_lines(self):
         self.ensure_one()
-        aa = self._get_analytic_account()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": self.employee_advance_account_id.id,
-            "analytic_account_id": aa and aa.id or False,
             "credit": 0.0,
             "debit": self.amount_total,
         }
@@ -494,12 +483,10 @@ class HrAdvance(models.Model):
     @api.multi
     def _prepare_payable_advance_move_lines(self):
         self.ensure_one()
-        aa = self._get_analytic_account()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": self.employee_advance_payable_account_id.id,
-            "analytic_account_id": aa and aa.id or False,
             "debit": 0.0,
             "credit": self.amount_total,
         }

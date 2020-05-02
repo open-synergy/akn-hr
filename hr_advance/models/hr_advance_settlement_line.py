@@ -146,14 +146,12 @@ class HrAdvanceSettlementLine(models.Model):
     @api.multi
     def _prepare_advance_move_lines(self):
         self.ensure_one()
-        aa = self._get_analytic_account()
         debit, credit = self._get_advance_amount()
         employee_advance_account = self.advance_id.employee_advance_account_id
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": employee_advance_account.id,
-            "analytic_account_id": aa and aa.id or False,
             "debit": debit,
             "credit": credit,
         }
