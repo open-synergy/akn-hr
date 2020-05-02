@@ -157,7 +157,7 @@ class HrAdvance(models.Model):
         store=True,
     )
     amount_realized = fields.Monetary(
-        string="Total Realized",
+        string="Total Payment",
         compute="_compute_residual",
         store=True,
     )
@@ -167,7 +167,7 @@ class HrAdvance(models.Model):
         store=True,
     )
     amount_settled = fields.Monetary(
-        string="Total Settlement",
+        string="Total Realized",
         compute="_compute_settlement",
         store=True,
     )
