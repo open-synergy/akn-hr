@@ -7,10 +7,10 @@ from odoo import models, fields
 
 class HrAdvanceSettlementType(models.Model):
     _name = "hr.advance_settlement_type"
-    _description = "Employee Advance Settlement Type"
+    _description = "Employee Advance Realization Type"
 
     name = fields.Char(
-        string="Employee Advance Settlement Type",
+        string="Employee Advance Realization Type",
         required=True,
     )
     code = fields.Char(
