@@ -124,12 +124,13 @@
                         <field name="project_id"/>
                         <field name="date_request"/>
                         <field name="type_id"/>
+                        <field name="input_type" invisible="1"/>
                         <field name="currency_id" groups="base.group_multi_currency"/>
                     </group>
                 </group>
                 <notebook colspan="4">
                     <page name="detail" string="Advance Details">
-                        <group name="detail_1" colspan="4" col="2">
+                        <group name="detail_1" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','detail')]}">
                             <field name="line_ids" colspan="2" nolabel="1" context="{'default_employee_id':employee_id, 'default_type_id': type_id}">
                                 <tree editable="top">
                                     <field name="sequence" widget="handle"/>
@@ -144,8 +145,12 @@
                                 </tree>
                             </field>
                         </group>
-                        <group name="detaail_2" colspan="4" col="2">
-                            <field name="amount_total"/>
+                        <group name="detail_2" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','general')]}">
+                            <field name="advance_purpose" attrs="{'required':[('input_type','!=','detail')]}"/>
+                        </group>
+                        <group name="detail_3" colspan="4" col="2">
+                            <field name="amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}"/>
+                            <field name="amount_total" attrs="{'invisible':[('input_type','!=','detail')]}"/>
                             <field name="amount_realized"/>
                             <field name="amount_residual"/>
                             <field name="amount_settled"/>

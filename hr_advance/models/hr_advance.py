@@ -33,13 +33,18 @@ class HrAdvance(models.Model):
     @api.depends(
         "line_ids",
         "line_ids.price_subtotal",
+        "input_type",
+        "amount_manual",
     )
     @api.multi
     def _compute_amount_total(self):
         for document in self:
             total = 0.0
-            for line in document.line_ids:
-                total += line.price_subtotal
+            if document.input_type == "detail":
+                for line in document.line_ids:
+                    total += line.price_subtotal
+            elif document.input_type == "general":
+                total = document.amount_manual
             document.amount_total = total
 
     @api.depends(
@@ -149,9 +154,37 @@ class HrAdvance(models.Model):
             ],
         },
     )
+    input_type = fields.Selection(
+        string="Input Type",
+        selection=[
+            ("detail", "Detail"),
+            ("general", "General"),
+        ],
+        default="detail",
+        required=True,
+    )
     date_request = fields.Date(
         string="Date Request",
         required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    advance_purpose = fields.Text(
+        string="Advance Purpose",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    amount_manual = fields.Monetary(
+        string="Advance Amount",
+        default=0.0,
         readonly=True,
         states={
             "draft": [
@@ -606,6 +639,14 @@ class HrAdvance(models.Model):
             result = self.type_id.employee_advance_account_id
 
         self.employee_advance_account_id = result
+
+    @api.onchange(
+        "type_id",
+    )
+    def onchange_input_type(self):
+        self.input_type = False
+        if self.type_id:
+            self.input_type = self.type_id.input_type
 
     @api.multi
     def unlink(self):

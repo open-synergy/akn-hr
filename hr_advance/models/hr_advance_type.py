@@ -24,6 +24,15 @@ class HrAdvanceType(models.Model):
     note = fields.Text(
         string="Note",
     )
+    input_type = fields.Selection(
+        string="Input Type",
+        selection=[
+            ("detail", "Detail"),
+            ("general", "General"),
+        ],
+        default="detail",
+        required=True,
+    )
     allowed_product_categ_ids = fields.Many2many(
         string="Allowed Product Categories",
         comodel_name="product.category",
