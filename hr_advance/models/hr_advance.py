@@ -269,18 +269,21 @@ class HrAdvance(models.Model):
         comodel_name="account.move",
         readonly=True,
         copy=False,
+        ondelete="restrict",
     )
     employee_advance_payable_move_line_id = fields.Many2one(
         string="Employee Advance Payable Move Line",
         comodel_name="account.move.line",
         readonly=True,
         copy=False,
+        ondelete="restrict",
     )
     employee_advance_move_line_id = fields.Many2one(
         string="Employee Advance Move Line",
         comodel_name="account.move.line",
         readonly=True,
         copy=False,
+        ondelete="restrict",
     )
     line_ids = fields.One2many(
         string="Advance Details",
@@ -445,7 +448,8 @@ class HrAdvance(models.Model):
             "cancel_date": fields.Datetime.now(),
             "cancel_user_id": self.env.user.id,
             "move_id": False,
-            "move_line_id": False,
+            "employee_advance_payable_move_line_id": False,
+            "employee_advance_move_line_id": False,
         }
 
     @api.multi
