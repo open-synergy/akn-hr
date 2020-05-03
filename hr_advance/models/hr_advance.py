@@ -53,9 +53,13 @@ class HrAdvance(models.Model):
         for document in self:
             realized = 0.0
             residual = document.amount_total
+            currency = document._get_currency()
             if document.employee_advance_payable_move_line_id:
                 move_line = document.employee_advance_payable_move_line_id
-                residual = -1.0 * move_line.amount_residual
+                if not currency:
+                    residual = -1.0 * move_line.amount_residual
+                else:
+                    residual = -1.0 * move_line.amount_residual_currency
                 realized = document.amount_total - residual
             document.amount_realized = realized
             document.amount_residual = residual
@@ -68,11 +72,15 @@ class HrAdvance(models.Model):
     @api.multi
     def _compute_settlement(self):
         for document in self:
+            currency = document._get_currency()
             settled = 0.0
             due = document.amount_total
             if document.employee_advance_move_line_id:
                 move_line = document.employee_advance_move_line_id
-                due = 1.0 * move_line.amount_residual
+                if not currency:
+                    due = 1.0 * move_line.amount_residual
+                else:
+                    due = 1.0 * move_line.amount_residual_currency
                 settled = document.amount_total - due
             document.amount_due = due
             document.amount_settled = settled
@@ -443,6 +451,7 @@ class HrAdvance(models.Model):
         ctx = {
             "check_move_validity": False,
         }
+
         line = obj_line.with_context(ctx).create(
             self._prepare_payable_advance_move_lines())
         self.write({
@@ -461,6 +470,61 @@ class HrAdvance(models.Model):
             "employee_advance_move_line_id": line.id})
 
     @api.multi
+    def _get_currency(self):
+        self.ensure_one()
+        result = False
+        if self.company_id.currency_id != self.currency_id:
+            result = self.currency_id
+        return result
+
+    @api.multi
+    def _get_advance_amount(self):
+        debit = credit = amount = amount_currency = 0.0
+        currency = self._get_currency()
+
+        if currency:
+            amount_currency = self.amount_total
+            amount = currency.compute(
+                amount_currency,
+                self.company_id.currency_id,
+            )
+        else:
+            amount = self.amount_total
+
+
+        if amount >= 0.0:
+            debit = amount
+        else:
+            credit = amount
+            amount_currency *= -1.0
+
+        return debit, credit, amount_currency
+
+    @api.multi
+    def _get_advance_payable_amount(self):
+        debit = credit = amount = amount_currency = 0.0
+        currency = self._get_currency()
+
+        if currency:
+            amount_currency = self.amount_total
+            amount = currency.compute(
+                amount_currency,
+                self.company_id.currency_id,
+                round=False,
+            )
+        else:
+            amount = self.amount_total
+
+
+        if amount < 0.0:
+            debit = amount
+        else:
+            credit = amount
+            amount_currency *= -1.0
+
+        return debit, credit, amount_currency
+
+    @api.multi
     def _prepare_account_move(self):
         self.ensure_one()
         return {
@@ -472,23 +536,31 @@ class HrAdvance(models.Model):
     @api.multi
     def _prepare_advance_move_lines(self):
         self.ensure_one()
+        currency = self._get_currency()
+        debit, credit, amount_currency = self._get_advance_amount()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": self.employee_advance_account_id.id,
-            "credit": 0.0,
-            "debit": self.amount_total,
+            "credit": credit,
+            "debit": debit,
+            "currency_id": currency and currency.id or False,
+            "amount_currency": amount_currency,
         }
 
     @api.multi
     def _prepare_payable_advance_move_lines(self):
         self.ensure_one()
+        currency = self._get_currency()
+        debit, credit, amount_currency = self._get_advance_payable_amount()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": self.employee_advance_payable_account_id.id,
-            "debit": 0.0,
-            "credit": self.amount_total,
+            "debit": debit,
+            "credit": credit,
+            "currency_id": currency and currency.id or False,
+            "amount_currency": amount_currency,
         }
 
     @api.multi
