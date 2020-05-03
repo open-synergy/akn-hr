@@ -130,10 +130,19 @@ class HrAdvanceSettlementLine(models.Model):
         }
 
     @api.multi
+    def _get_currency(self):
+        self.ensure_one()
+        result = False
+        if self.advance_id.company_id.currency_id != self.settlement_id.currency_id:
+            result = self.settlement_id.currency_id
+        return result
+
+    @api.multi
     def _prepare_expense_move_lines(self):
         self.ensure_one()
         aa = self._get_analytic_account()
-        debit, credit = self._get_expense_amount()
+        debit, credit, amount_currency = self._get_expense_amount()
+        currency = self._get_currency()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
@@ -141,42 +150,69 @@ class HrAdvanceSettlementLine(models.Model):
             "analytic_account_id": aa and aa.id or False,
             "debit": debit,
             "credit": credit,
+            "currency_id": currency and currency.id or False,
+            "amount_currency": amount_currency,
         }
 
     @api.multi
     def _prepare_advance_move_lines(self):
         self.ensure_one()
-        debit, credit = self._get_advance_amount()
+        debit, credit, amount_currency = self._get_advance_amount()
         employee_advance_account = self.advance_id.employee_advance_account_id
+        currency = self._get_currency()
         return {
             "move_id": self.move_id.id,
             "partner_id": self._get_partner().id,
             "account_id": employee_advance_account.id,
             "debit": debit,
             "credit": credit,
+            "currency_id": currency and currency.id or False,
+            "amount_currency": amount_currency,
         }
 
     @api.multi
     def _get_expense_amount(self):
-        debit = credit = 0.0
+        debit = credit = amount = amount_currency = 0.0
+        currency = self._get_currency()
 
-        if self.price_subtotal >= 0.0:
-            debit = self.price_subtotal
+        if currency:
+            amount_currency = self.price_subtotal
+            amount = currency.with_context(date=self.date).compute(
+                amount_currency,
+                self.settlement_id.company_id.currency_id,
+            )
         else:
-            credit = self.price_subtotal
+            amount = self.price_subtotal
 
-        return debit, credit
+
+        if amount >= 0.0:
+            debit = amount
+        else:
+            credit = amount
+
+        return debit, credit, amount_currency
 
     @api.multi
     def _get_advance_amount(self):
-        debit = credit = 0.0
+        debit = credit = amount_currency = 0.0
+        currency = self._get_currency()
 
-        if self.price_subtotal >= 0.0:
-            credit = self.price_subtotal
+        if currency:
+            amount_currency = self.price_subtotal
+            amount = currency.with_context(date=self.date).compute(
+                amount_currency,
+                self.settlement_id.company_id.currency_id,
+            )
         else:
-            debit = self.price_subtotal
+            amount = self.price_subtotal
 
-        return debit, credit
+        if amount >= 0.0:
+            credit = amount
+            amount_currency *= -1.0
+        else:
+            debit = amount
+
+        return debit, credit, amount_currency
 
     @api.multi
     def _get_analytic_account(self):
