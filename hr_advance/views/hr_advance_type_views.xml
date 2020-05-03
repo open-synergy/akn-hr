@@ -35,6 +35,7 @@
                     <field name="name"/>
                     <field name="code"/>
                     <field name="active"/>
+                    <field name="input_type"/>
                     <field name="sequence_id"/>
                 </group>
                 <notebook>
