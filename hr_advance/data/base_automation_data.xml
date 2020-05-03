@@ -23,4 +23,14 @@
     <field name="code">record.action_done()</field>
 </record>
 
+<record id="hr_advance_done_2_open_automation" model="base.automation">
+    <field name="name">Set Open From Done</field>
+    <field name="model_id" ref="hr_advance.model_hr_advance"/>
+    <field name="state">code</field>
+    <field name="trigger">on_write</field>
+    <field name="filter_pre_domain">[('amount_due','=',0.0)]</field>
+    <field name="filter_domain">[('amount_due','!=',0.0)]</field>
+    <field name="code">record.action_open()</field>
+</record>
+
 </odoo>

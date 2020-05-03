@@ -195,6 +195,7 @@ class HrAdvanceSettlement(models.Model):
     def action_cancel(self):
         for document in self:
             document.write(document._prepare_cancel_data())
+            document._unlink_accounting_entry()
 
     @api.multi
     def action_restart(self):
@@ -245,11 +246,10 @@ class HrAdvanceSettlement(models.Model):
     @api.multi
     def _create_accounting_entry(self):
         self.ensure_one()
-        for line in self.line_ids:
+        for line in self.line_ids.filtered(lambda r: not r.move_id):
             line._create_accounting_entry()
-
-        for line in self.line_ids:
             line._reconcile_advance()
+
 
     @api.multi
     def _unlink_accounting_entry(self):
