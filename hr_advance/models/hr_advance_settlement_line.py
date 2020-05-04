@@ -95,6 +95,10 @@ class HrAdvanceSettlementLine(models.Model):
         compute="_compute_price_subtotal",
         store=True,
     )
+    final_price_subtotal = fields.Float(
+        string="Approved Subtotal",
+        readonly=True,
+    )
     move_id = fields.Many2one(
         string="# Expense Move",
         comodel_name="account.move",
@@ -176,13 +180,13 @@ class HrAdvanceSettlementLine(models.Model):
         currency = self._get_currency()
 
         if currency:
-            amount_currency = self.price_subtotal
+            amount_currency = self.final_price_subtotal
             amount = currency.with_context(date=self.date).compute(
                 amount_currency,
                 self.settlement_id.company_id.currency_id,
             )
         else:
-            amount = self.price_subtotal
+            amount = self.final_price_subtotal
 
         if amount >= 0.0:
             debit = amount
@@ -197,13 +201,13 @@ class HrAdvanceSettlementLine(models.Model):
         currency = self._get_currency()
 
         if currency:
-            amount_currency = self.price_subtotal
+            amount_currency = self.final_price_subtotal
             amount = currency.with_context(date=self.date).compute(
                 amount_currency,
                 self.settlement_id.company_id.currency_id,
             )
         else:
-            amount = self.price_subtotal
+            amount = self.final_price_subtotal
 
         if amount >= 0.0:
             credit = amount
@@ -282,6 +286,13 @@ class HrAdvanceSettlementLine(models.Model):
             result = self.product_id.categ_id.property_account_expense_categ_id
 
         self.account_id = result
+
+    @api.onchange(
+        "price_unit",
+        "quantity",
+    )
+    def onchange_final_price_subtotal(self):
+        self.final_price_subtotal = self.price_subtotal
 
     @api.multi
     def _unlink_account_move(self):
