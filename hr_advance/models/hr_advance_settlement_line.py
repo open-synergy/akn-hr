@@ -137,7 +137,8 @@ class HrAdvanceSettlementLine(models.Model):
     def _get_currency(self):
         self.ensure_one()
         result = False
-        if self.advance_id.company_id.currency_id != self.settlement_id.currency_id:
+        if self.advance_id.company_id.currency_id != \
+                self.settlement_id.currency_id:
             result = self.settlement_id.currency_id
         return result
 
