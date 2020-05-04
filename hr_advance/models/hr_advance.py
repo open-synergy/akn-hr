@@ -32,9 +32,9 @@ class HrAdvance(models.Model):
 
     @api.depends(
         "line_ids",
-        "line_ids.price_subtotal",
+        "line_ids.final_price_subtotal",
         "input_type",
-        "amount_manual",
+        "final_amount_manual",
     )
     @api.multi
     def _compute_amount_total(self):
@@ -42,9 +42,9 @@ class HrAdvance(models.Model):
             total = 0.0
             if document.input_type == "detail":
                 for line in document.line_ids:
-                    total += line.price_subtotal
+                    total += line.final_price_subtotal
             elif document.input_type == "general":
-                total = document.amount_manual
+                total = document.final_amount_manual
             document.amount_total = total
 
     @api.depends(
@@ -73,6 +73,7 @@ class HrAdvance(models.Model):
         "employee_advance_move_line_id.amount_residual",
         "employee_advance_move_line_id",
         "state",
+        "amount_total",
     )
     @api.multi
     def _compute_settlement(self):
@@ -191,6 +192,10 @@ class HrAdvance(models.Model):
                 ("readonly", False),
             ],
         },
+    )
+    final_amount_manual = fields.Monetary(
+        string="Approved Advance Amount",
+        readonly=True,
     )
     amount_total = fields.Monetary(
         string="Total",
@@ -373,6 +378,8 @@ class HrAdvance(models.Model):
     def action_confirm(self):
         for document in self:
             document.write(document._prepare_confirm_data())
+            for line in document.line_ids:
+                line._reset_final_price_subtotal()
 
     @api.multi
     def action_approve(self):
@@ -465,6 +472,7 @@ class HrAdvance(models.Model):
             "done_user_id": False,
             "cancel_date": False,
             "cancel_user_id": False,
+            "final_amount_manual": self.amount_manual,
         }
 
     @api.multi
@@ -528,7 +536,6 @@ class HrAdvance(models.Model):
         else:
             amount = self.amount_total
 
-
         if amount >= 0.0:
             debit = amount
         else:
@@ -551,7 +558,6 @@ class HrAdvance(models.Model):
             )
         else:
             amount = self.amount_total
-
 
         if amount < 0.0:
             debit = amount
@@ -651,6 +657,12 @@ class HrAdvance(models.Model):
         self.input_type = False
         if self.type_id:
             self.input_type = self.type_id.input_type
+
+    @api.onchange(
+        "amount_manual",
+    )
+    def onchange_final_amount_manual(self):
+        self.final_amount_manual = self.amount_manual
 
     @api.multi
     def unlink(self):

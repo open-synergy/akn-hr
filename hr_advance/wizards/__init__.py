@@ -3,6 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
-    models,
+    hr_change_advance_amount_manual,
+    hr_change_advance_price_subtotal,
 )
-from . import wizards
