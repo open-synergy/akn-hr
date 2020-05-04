@@ -120,6 +120,9 @@
                 <notebook colspan="4">
                     <page name="detail" string="Realization Details">
                         <group name="detail_1" colspan="4" col="2">
+                            <button name="%(hr_change_advance_settlement_price_subtotal_view_action)d" type="action" icon="fa-exchange" string="Change Approved Amount" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                        </group>
+                        <group name="detail_2" colspan="4" col="2">
                             <field name="line_ids" colspan="2" nolabel="1" context="{'default_employee_id':employee_id}">
                                 <tree editable="top">
                                     <field name="sequence" widget="handle"/>
@@ -133,10 +136,11 @@
                                     <field name="allowed_uom_ids" widget="many2many_tags" invisible="1"/>
                                     <field name="uom_id" domain="[('id','in',allowed_uom_ids)]" groups="product.group_uom"/>
                                     <field name="price_subtotal"/>
+                                    <field name="final_price_subtotal" force_save="1"/>
                                 </tree>
                             </field>
                         </group>
-                        <group name="detaail_2" colspan="4" col="2">
+                        <group name="detaail_3" colspan="4" col="2">
                             <field name="amount_total"/>
                         </group>
                     </page>

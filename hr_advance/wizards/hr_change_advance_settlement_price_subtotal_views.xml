@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="hr_change_advance_settlement_price_subtotal_view_form" model="ir.ui.view">
+    <field name="name">hr.change_advance_settlement_price_subtotal form</field>
+    <field name="model">hr.change_advance_settlement_price_subtotal</field>
+    <field name="arch" type="xml">
+        <form>
+            <group name="group_1" colspan="4" col="2">
+                <field name="settlement_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+            </group>
+            <group name="group_2" colspan="4" col="2">
+                <field name="line_ids" nolabel="1" colspan="2">
+                    <tree editable="top" create="false" delete="false">
+                        <field name="line_id" invisible="1" force_save="1"/>
+                        <field name="product_id"/>
+                        <field name="price_unit"/>
+                        <field name="quantity"/>
+                        <field name="uom_id"/>
+                        <field name="price_subtotal"/>
+                        <field name="final_price_subtotal"/>
+                    </tree>
+                </field>
+            </group>
+            <footer>
+                <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"/>
+                <button special="cancel" string="Cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+<record id="hr_change_advance_settlement_price_subtotal_view_action" model="ir.actions.act_window">
+    <field name="name">Change Approved Amount</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">hr.change_advance_settlement_price_subtotal</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+    <field name="view_id" ref="hr_change_advance_settlement_price_subtotal_view_form"/>
+</record>
+
+</odoo>

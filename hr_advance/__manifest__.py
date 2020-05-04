@@ -27,6 +27,7 @@ Features :
         "menu.xml",
         "wizards/hr_change_advance_amount_manual_views.xml",
         "wizards/hr_change_advance_price_subtotal_views.xml",
+        "wizards/hr_change_advance_settlement_price_subtotal_views.xml",
         "views/hr_employee_views.xml",
         "views/hr_advance_type_views.xml",
         "views/hr_advance_settlement_type_views.xml",

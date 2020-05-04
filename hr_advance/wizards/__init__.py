@@ -5,4 +5,5 @@
 from . import (
     hr_change_advance_amount_manual,
     hr_change_advance_price_subtotal,
+    hr_change_advance_settlement_price_subtotal,
 )
