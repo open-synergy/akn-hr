@@ -250,7 +250,6 @@ class HrAdvanceSettlement(models.Model):
             line._create_accounting_entry()
             line._reconcile_advance()
 
-
     @api.multi
     def _unlink_accounting_entry(self):
         self.ensure_one()

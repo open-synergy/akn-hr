@@ -184,7 +184,6 @@ class HrAdvanceSettlementLine(models.Model):
         else:
             amount = self.price_subtotal
 
-
         if amount >= 0.0:
             debit = amount
         else:

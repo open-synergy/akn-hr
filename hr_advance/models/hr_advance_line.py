@@ -81,10 +81,27 @@ class HrAdvanceLine(models.Model):
         compute="_compute_price_subtotal",
         store=True,
     )
+    final_price_subtotal = fields.Float(
+        string="Approved Subtotal",
+        readonly=True,
+    )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="hr.advance_type",
         related="advance_id.type_id",
+        store=False,
+    )
+    advance_state = fields.Selection(
+        string="State",
+        selection=[
+            ("draft", "Draft"),
+            ("confirm", "Waiting for Approval"),
+            ("approve", "Waiting for Realization"),
+            ("open", "Waiting for Settlement"),
+            ("done", "Done"),
+            ("cancel", "Cancelled"),
+        ],
+        related="advance_id.state",
         store=False,
     )
 
@@ -95,3 +112,15 @@ class HrAdvanceLine(models.Model):
         self.uom_id = False
         if self.product_id:
             self.uom_id = self.product_id.uom_id
+
+    @api.multi
+    def _reset_final_price_subtotal(self):
+        self.ensure_one()
+        self.final_price_subtotal = self.price_subtotal
+
+    @api.onchange(
+        "price_unit",
+        "quantity",
+    )
+    def onchange_final_price_subtotal(self):
+        self.final_price_subtotal = self.price_subtotal

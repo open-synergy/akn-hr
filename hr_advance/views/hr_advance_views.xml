@@ -142,6 +142,9 @@
                                     <field name="allowed_uom_ids" widget="many2many_tags" invisible="1"/>
                                     <field name="uom_id" domain="[('id','in',allowed_uom_ids)]" groups="product.group_uom"/>
                                     <field name="price_subtotal"/>
+                                    <field name="advance_state" invisible="1"/>
+                                    <button name="%(hr_advance.hr_change_advance_price_subtotal_view_action)d" type="action" icon="fa-exchange" string="Change Approved Subtotal" class="oe_link oe_inline" attrs="{'invisible':[('advance_state','!=','confirm')]}"/>
+                                    <field name="final_price_subtotal" force_save="1"/>
                                 </tree>
                             </field>
                         </group>
@@ -150,6 +153,12 @@
                         </group>
                         <group name="detail_3" colspan="4" col="2">
                             <field name="amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}"/>
+                            <label for="final_amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}"/>
+                            <div>
+                                <field name="final_amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}" class="oe_inline" force_save="1"/>
+                                <button name="%(hr_advance.hr_change_advance_amount_manual_view_action)d" type="action" icon="fa-exchange" class="oe_link oe_inline" attrs="{'invisible':['|',('input_type','!=','general'),('state', '!=', 'confirm')]}"/>
+                            </div>
+
                             <field name="amount_total" attrs="{'invisible':[('input_type','!=','detail')]}"/>
                             <field name="amount_realized"/>
                             <field name="amount_residual"/>

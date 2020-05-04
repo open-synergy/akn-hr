@@ -25,6 +25,8 @@ Features :
         "security/ir.model.access.csv",
         "data/base_automation_data.xml",
         "menu.xml",
+        "wizards/hr_change_advance_amount_manual_views.xml",
+        "wizards/hr_change_advance_price_subtotal_views.xml",
         "views/hr_employee_views.xml",
         "views/hr_advance_type_views.xml",
         "views/hr_advance_settlement_type_views.xml",
