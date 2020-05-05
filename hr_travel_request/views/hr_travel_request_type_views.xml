@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="hr_travel_request_type_view_search" model="ir.ui.view">
+    <field name="name">hr.travel_request_type form</field>
+    <field name="model">hr.travel_request_type</field>
+    <field name="arch" type="xml">
+        <search>
+        </search>
+    </field>
+</record>
+
+<record id="hr_travel_request_type_view_tree" model="ir.ui.view">
+    <field name="name">hr.travel_request_type tree</field>
+    <field name="model">hr.travel_request_type</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="code"/>
+        </tree>
+    </field>
+</record>
+
+<record id="hr_travel_request_type_view_form" model="ir.ui.view">
+    <field name="name">hr.travel_request_type form</field>
+    <field name="model">hr.travel_request_type</field>
+    <field name="arch" type="xml">
+        <form>
+            <header/>
+            <sheet>
+                <div class="oe_right oe_button_box" style="width: 300px;" name="buttons"/>
+                <group name="group_1" colspan="4" col="2">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                    <field name="sequence_id"/>
+                </group>
+                <notebook>
+                    <page name="transportation_expense" string="Transportation Expenses">
+                        <group name="transportation_expense_1" colspan="4" col="2">
+                            <field name="transportation_expense_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="round_trip"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="daily_expense" string="Daily Expenses">
+                        <group name="daily_expense_1" colspan="4" col="2">
+                            <field name="daily_expense_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="fixed_expense" string="Fixed Expenses">
+                        <group name="fixed_expense_1" colspan="4" col="2">
+                            <field name="fixed_expense_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="note" string="Note">
+                        <field name="note"/>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<record id="hr_travel_request_type_action" model="ir.actions.act_window">
+    <field name="name">Request Types</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">hr.travel_request_type</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+    id="hr_travel_request_type_menu"
+    name="Request Types"
+    parent="employee_travel_request_configuration_menu"
+    action="hr_travel_request_type_action"
+    sequence="1"
+    />
+</odoo>

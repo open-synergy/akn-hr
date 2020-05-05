@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="hr_travel_request_view_search" model="ir.ui.view">
+    <field name="name">hr.travel_request form</field>
+    <field name="model">hr.travel_request</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="employee_id" invisible="context.get('hide_employee',False)"/>
+            <field name="project_id"/>
+            <field name="type_id"/>
+            <field name="date_depart"/>
+            <field name="date_arrive"/>
+            <field name="days_travel"/>
+            <field name="depart_from"/>
+            <field name="arrive_to"/>            
+            <field name="currency_id" groups="base.group_multi_currency"/>
+            <group name="dom_state" string="State">
+                <filter name="dom_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="dom_confirm" string="Waiting for Approval" domain="[('state','=','confirm')]"/>
+                <filter name="dom_done" string="Approved" domain="[('state','=','done')]"/>
+                <filter name="dom_cancel" string="Cancel" domain="[('state','=','cancel')]"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<record id="hr_travel_request_view_tree" model="ir.ui.view">
+    <field name="name">hr.travel_request tree</field>
+    <field name="model">hr.travel_request</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="employee_id" invisible="context.get('hide_employee',False)"/>
+            <field name="project_id"/>
+            <field name="type_id"/>
+            <field name="date_depart"/>
+            <field name="date_arrive"/>
+            <field name="days_travel"/>
+            <field name="depart_from"/>
+            <field name="arrive_to"/>
+            <field name="currency_id" groups="base.group_multi_currency"/>
+            <field name="amount_total_transportation" sum="Total Transportation Expense"/>
+            <field name="amount_total_daily" sum="Total Daily Expense"/>
+            <field name="amount_total_fixed" sum="Total Fixed Expense"/>
+            <field name="amount_total" sum="Total Expense"/>
+            <field name="state"/>
+        </tree>
+    </field>
+</record>
+
+<record id="hr_travel_request_view_form" model="ir.ui.view">
+    <field name="name">hr.travel_request form</field>
+    <field name="model">hr.travel_request</field>
+    <field name="arch" type="xml">
+        <form>
+            <header>
+                <button name="action_confirm" type="object" string="Confirm" class="oe_highlight" confirm="Confirm travel request. Are you sure?" states="draft"/>
+                <button name="request_validation"
+                    string="Request Validation"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|','|',('need_validation', '!=', True),('rejected','=',True),('state','not in',['confirm'])]}"
+                    confirm="Start approval process for this travel request. Are you sure?"
+                    type="object"/>
+                <button name="restart_validation"
+                    string="Restart Validation"
+                    confirm="Restart approval process for this travel request. Are you sure?"
+                    attrs="{'invisible': ['|',('review_ids', '=', []),('state','not in',['confirm'])]}"
+                    type="object"/>
+                <button name="action_cancel" type="object" string="Cancel" confirm="Cancel travel request. Are you sure?" states="draft,confirm,done"/>
+                <button name="action_restart" type="object" string="Restart" confirm="Restart travel request. Are you sure?" states="cancel"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+            </header>
+            <field name="need_validation" invisible="1"/>
+            <field name="validated" invisible="1"/>
+            <field name="rejected" invisible="1"/>
+            <div class="alert alert-warning"
+                 attrs="{'invisible': ['|', '|', '|',
+                 ('validated', '=', True), ('state', 'not in', ['confirm']),
+                 ('rejected', '=', True), ('review_ids', '=', [])]}"
+                 style="margin-bottom:0px;">
+                <p><i class="fa fa-info-circle"/>This travel request needs to be
+                    validated.
+                    <field name="can_review" invisible="1"/>
+                    <button name="validate_tier"
+                            string="Validate"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            type="object"
+                            class="oe_inline oe_button btn-success"
+                            icon="fa-thumbs-up"/>
+                    <button name="reject_tier"
+                            string="Reject"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            type="object"
+                            class="btn-icon btn-danger"
+                            icon="fa-thumbs-down"/>
+                </p>
+            </div>
+            <div class="alert alert-success"
+                 attrs="{'invisible': ['|', '|', ('validated', '!=', True), ('state', 'not in', ['confirm']), ('review_ids', '=', [])]}"
+                 style="margin-bottom:0px;">
+                <p><i class="fa fa-thumbs-up"/> Operation has been <b>validated</b>!</p>
+            </div>
+            <div class="alert alert-danger"
+                 attrs="{'invisible': ['|', '|', ('rejected', '!=', True), ('state', 'not in', ['confirm']), ('review_ids', '=', [])]}"
+                 style="margin-bottom:0px;">
+                <p><i class="fa fa-thumbs-down"/> Operation has been <b>rejected</b>.</p>
+            </div>
+            <sheet>
+                <div class="oe_right oe_button_box" style="width: 300px;" name="buttons">
+                </div>
+                <div class="oe_left" style="width: 500px;">
+                    <div class="oe_title" style="width: 500px;">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                </div>
+                <group name="group_1" colspan="4" col="2">
+                    <group name="group_1_1" colspan="1" col="2">
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="employee_id" invisible="context.get('hide_employee',False)"/>
+                        <field name="project_id"/>
+                        <field name="type_id"/>
+                        <field name="currency_id" groups="base.group_multi_currency"/>
+                        <field name="allowed_pricelist_ids" widget="many2many_tags" invisible="1"/>
+                        <field name="pricelist_id" domain="[('id','in',allowed_pricelist_ids)]"/>
+                    </group>
+                    <group name="group_1_2">
+                        <label for="date_depart" string="Travel Date"/>
+                        <div>
+                            <field name="date_depart" class="oe_inline"/>
+                             to
+                            <field name="date_arrive" class="oe_inline"/>
+
+                        </div>
+                        <label for="days_travel" string="Travel Days"/>
+                        <div>
+                            <field name="days_travel" class="oe_inline"/> Day(s)
+                        </div>
+                        <label for="depart_from" string="Travel Location"/>
+                        <div>
+                            <field name="depart_from" class="oe_inline"/>
+                             to
+                            <field name="arrive_to" class="oe_inline"/>
+                        </div>
+                    </group>
+                </group>
+                <notebook colspan="4">
+                    <page name="transportation_expense" string="Transportation Expenses">
+                        <group name="transportation_expense_1" colspan="4" col="2">
+                            <button name="%(hr_approve_transportation_expense_view_action)d" type="action" icon="fa-exchange" string="Change Approved Price Unit" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                        </group>
+                        <group name="transportation_expense_2" colspan="4" col="2">
+                            <field name="transportation_expense_ids" nolabel="1" context="{'default_pricelist_id':pricelist_id}">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="pricelist_id"/>
+                                    <field name="product_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="quantity"/>
+                                    <field name="round_trip"/>
+                                    <field name="final_quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="daily_expense" string="Daily Expenses">
+                        <group name="daily_expense_1" colspan="4" col="2">
+                            <button name="%(hr_approve_daily_expense_view_action)d" type="action" icon="fa-exchange" string="Change Approved Price Unit" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                        </group>
+                        <group name="daily_expense_2" colspan="4" col="2">
+                            <field name="daily_expense_ids" nolabel="1" context="{'default_days_travel':days_travel, 'default_pricelist_id':pricelist_id}">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="pricelist_id"/>
+                                    <field name="product_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="days_travel" invisible="1"/>
+                                    <field name="quantity"/>
+                                    <field name="final_quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="fixed_expense" string="Fixed Expenses">
+                        <group name="fixed_expense_1" colspan="4" col="2">
+                            <button name="%(hr_approve_fixed_expense_view_action)d" type="action" icon="fa-exchange" string="Change Approved Price Unit" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                        </group>
+                        <group name="fixed_expense_2" colspan="4" col="2">
+                            <field name="fixed_expense_ids" nolabel="1" context="{'default_pricelist_id':pricelist_id}">
+                                <tree editable="top">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="pricelist_id"/>
+                                    <field name="product_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="realization_method"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="note" string="Notes">
+                        <field name="note"/>
+                    </page>
+                    <page name="log" string="Logs"  groups="hr_travel_request.employee_advance_show_log_group">
+                        <group name="group_5" colspan="4" col="3">
+                            <group name="group_log_1" colspan="4" col="3">
+                                <field name="confirm_date" string="Confirmation"/>
+                                <field name="confirm_user_id" nolabel="1"/>
+                                <field name="done_date" string="Finish"/>
+                                <field name="done_user_id" nolabel="1"/>
+                                <field name="cancel_date" string="Cancellation"/>
+                                <field name="cancel_user_id" nolabel="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+                <group name="group_2" colspan="4" col="2">
+                    <field name="amount_total_transportation" string="Transportation"/>
+                    <field name="amount_total_daily" string="Daily"/>
+                    <field name="amount_total_fixed" string="Fixed"/>
+                    <field name="amount_total"/>
+                </group>
+            </sheet>
+            <field name="review_ids" widget="tier_validation" attrs="{'invisible':[('review_ids', '=', [])]}"/>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+    </field>
+</record>
+
+<record id="hr_my_travel_request_action" model="ir.actions.act_window">
+    <field name="name">My Travel Requests</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">hr.travel_request</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{'hide_employee': True, 'search_default_dom_draft':1, 'search_default_dom_confirm':1, 'search_default_dom_open':1}</field>
+</record>
+
+<menuitem
+    id="hr_my_travel_request_menu"
+    name="My Requests"
+    parent="employee_travel_request_menu"
+    action="hr_my_travel_request_action"
+    sequence="1"
+    />
+
+<record id="hr_travel_request_action" model="ir.actions.act_window">
+    <field name="name">Requests</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">hr.travel_request</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{'hide_employee': False, 'search_default_dom_draft':1, 'search_default_dom_confirm':1,'search_default_dom_open':1}</field>
+</record>
+
+<menuitem
+    id="hr_travel_request_menu"
+    name="Requests"
+    parent="employee_travel_request_menu"
+    action="hr_travel_request_action"
+    sequence="2"
+    />
+</odoo>
