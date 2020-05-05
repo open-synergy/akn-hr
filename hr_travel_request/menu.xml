@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+
+<menuitem
+    id="employee_travel_request_root_menu"
+    name="Travel Request"
+    sequence="76"
+    />
+
+<menuitem
+    id="employee_travel_request_menu"
+    name="Request"
+    sequence="1"
+    parent="employee_travel_request_root_menu"
+    />
+
+<menuitem
+    id="employee_travel_request_reporting_menu"
+    name="Reporting"
+    parent="employee_travel_request_root_menu"
+    sequence="98"
+    />
+
+<menuitem
+    id="employee_travel_request_configuration_menu"
+    name="Configuration"
+    parent="employee_travel_request_root_menu"
+    sequence="99"
+    />
+
+
+
+
+</data>
+</openerp>
