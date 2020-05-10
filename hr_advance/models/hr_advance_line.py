@@ -10,14 +10,14 @@ class HrAdvanceLine(models.Model):
     _description = "Employee Advance Request Line"
 
     @api.depends(
-        "quantity",
-        "price_unit",
+        "approve_quantity",
+        "approve_price_unit",
     )
     @api.multi
     def _compute_price_subtotal(self):
         for document in self:
-            document.price_subtotal = document.quantity * \
-                document.price_unit
+            document.price_subtotal = document.approve_quantity * \
+                document.approve_price_unit
 
     @api.depends(
         "product_id",
@@ -60,10 +60,18 @@ class HrAdvanceLine(models.Model):
         string="Unit Price",
         required=True,
     )
+    approve_price_unit = fields.Float(
+        string="Approved Price Unit",
+        readonly=True,
+    )
     quantity = fields.Float(
         string="Qty",
         required=True,
         default=1.0,
+    )
+    approve_quantity = fields.Float(
+        string="Approved Quantity",
+        readonly=True,
     )
     allowed_uom_ids = fields.Many2many(
         string="Allowed UoM",
@@ -80,10 +88,6 @@ class HrAdvanceLine(models.Model):
         string="Subtotal",
         compute="_compute_price_subtotal",
         store=True,
-    )
-    final_price_subtotal = fields.Float(
-        string="Approved Subtotal",
-        readonly=True,
     )
     type_id = fields.Many2one(
         string="Type",
@@ -113,14 +117,14 @@ class HrAdvanceLine(models.Model):
         if self.product_id:
             self.uom_id = self.product_id.uom_id
 
-    @api.multi
-    def _reset_final_price_subtotal(self):
-        self.ensure_one()
-        self.final_price_subtotal = self.price_subtotal
+    @api.onchange(
+        "quantity",
+    )
+    def onchange_approve_quantity(self):
+        self.approve_quantity = self.quantity
 
     @api.onchange(
         "price_unit",
-        "quantity",
     )
-    def onchange_final_price_subtotal(self):
-        self.final_price_subtotal = self.price_subtotal
+    def onchange_approve_price_unit(self):
+        self.approve_price_unit = self.price_unit

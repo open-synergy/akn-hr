@@ -130,7 +130,10 @@
                 </group>
                 <notebook colspan="4">
                     <page name="detail" string="Advance Details">
-                        <group name="detail_1" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','detail')]}">
+                        <group name="detail_1" colspan="4" col="2">
+                            <button name="%(hr_approve_advance_detail_view_action)d" type="action" icon="fa-exchange" string="Change Approved Price Unit/Quantity" attrs="{'invisible':['|',('input_type','!=','detail'),('state', '!=', 'confirm')]}"/>
+                        </group>
+                        <group name="detail_2" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','detail')]}">
                             <field name="line_ids" colspan="2" nolabel="1" context="{'default_employee_id':employee_id, 'default_type_id': type_id}">
                                 <tree editable="top">
                                     <field name="sequence" widget="handle"/>
@@ -138,20 +141,20 @@
                                     <field name="type_id" invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="price_unit"/>
+                                    <field name="approve_price_unit" force_save="1"/>
                                     <field name="quantity"/>
+                                    <field name="approve_quantity" force_save="1"/>
                                     <field name="allowed_uom_ids" widget="many2many_tags" invisible="1"/>
                                     <field name="uom_id" domain="[('id','in',allowed_uom_ids)]" groups="product.group_uom"/>
                                     <field name="price_subtotal"/>
                                     <field name="advance_state" invisible="1"/>
-                                    <button name="%(hr_advance.hr_change_advance_price_subtotal_view_action)d" type="action" icon="fa-exchange" string="Change Approved Subtotal" class="oe_link oe_inline" attrs="{'invisible':[('advance_state','!=','confirm')]}"/>
-                                    <field name="final_price_subtotal" force_save="1"/>
                                 </tree>
                             </field>
                         </group>
-                        <group name="detail_2" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','general')]}">
+                        <group name="detail_3" colspan="4" col="2" attrs="{'invisible':[('input_type','!=','general')]}">
                             <field name="advance_purpose" attrs="{'required':[('input_type','!=','detail')]}"/>
                         </group>
-                        <group name="detail_3" colspan="4" col="2">
+                        <group name="detail_4" colspan="4" col="2">
                             <field name="amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}"/>
                             <label for="final_amount_manual" attrs="{'invisible':[('input_type','!=','general')], 'required':[('input_type','!=','detail')]}"/>
                             <div>
