@@ -11,14 +11,14 @@ class HrAdvanceSettlementLine(models.Model):
     _description = "Employee Advance Settlement Line"
 
     @api.depends(
-        "quantity",
-        "price_unit",
+        "approve_quantity",
+        "approve_price_unit",
     )
     @api.multi
     def _compute_price_subtotal(self):
         for document in self:
-            document.price_subtotal = document.quantity * \
-                document.price_unit
+            document.price_subtotal = document.approve_quantity * \
+                document.approve_price_unit
 
     @api.depends(
         "product_id",
@@ -74,10 +74,18 @@ class HrAdvanceSettlementLine(models.Model):
         string="Unit Price",
         required=True,
     )
+    approve_price_unit = fields.Float(
+        string="Approved Price Unit",
+        readonly=True,
+    )
     quantity = fields.Float(
         string="Qty",
         required=True,
         default=1.0,
+    )
+    approve_quantity = fields.Float(
+        string="Approved Quantity",
+        readonly=True,
     )
     allowed_uom_ids = fields.Many2many(
         string="Allowed UoM",
@@ -94,10 +102,6 @@ class HrAdvanceSettlementLine(models.Model):
         string="Subtotal",
         compute="_compute_price_subtotal",
         store=True,
-    )
-    final_price_subtotal = fields.Float(
-        string="Approved Subtotal",
-        readonly=True,
     )
     move_id = fields.Many2one(
         string="# Expense Move",
@@ -181,13 +185,13 @@ class HrAdvanceSettlementLine(models.Model):
         currency = self._get_currency()
 
         if currency:
-            amount_currency = self.final_price_subtotal
+            amount_currency = self.price_subtotal
             amount = currency.with_context(date=self.date).compute(
                 amount_currency,
                 self.settlement_id.company_id.currency_id,
             )
         else:
-            amount = self.final_price_subtotal
+            amount = self.price_subtotal
 
         if amount >= 0.0:
             debit = amount
@@ -202,13 +206,13 @@ class HrAdvanceSettlementLine(models.Model):
         currency = self._get_currency()
 
         if currency:
-            amount_currency = self.final_price_subtotal
+            amount_currency = self.price_subtotal
             amount = currency.with_context(date=self.date).compute(
                 amount_currency,
                 self.settlement_id.company_id.currency_id,
             )
         else:
-            amount = self.final_price_subtotal
+            amount = self.price_subtotal
 
         if amount >= 0.0:
             credit = amount
@@ -290,10 +294,15 @@ class HrAdvanceSettlementLine(models.Model):
 
     @api.onchange(
         "price_unit",
+    )
+    def onchange_approve_price_unit(self):
+        self.approve_price_unit = self.price_unit
+
+    @api.onchange(
         "quantity",
     )
-    def onchange_final_price_subtotal(self):
-        self.final_price_subtotal = self.price_subtotal
+    def onchange_approve_quantity(self):
+        self.approve_quantity = self.quantity
 
     @api.multi
     def _unlink_account_move(self):

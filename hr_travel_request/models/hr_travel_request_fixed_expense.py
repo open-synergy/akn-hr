@@ -10,14 +10,14 @@ class HrTravelRequestFixedExpense(models.Model):
     _description = "Travel Request Fixed Expense"
 
     @api.depends(
-        "quantity",
-        "final_price_unit",
+        "approve_quantity",
+        "approve_price_unit",
     )
     @api.multi
     def _compute_price_subtotal(self):
         for document in self:
-            document.price_subtotal = document.quantity * \
-                document.final_price_unit
+            document.price_subtotal = document.approve_quantity * \
+                document.approve_price_unit
 
     request_id = fields.Many2one(
         string="# Travel Request",
@@ -49,7 +49,7 @@ class HrTravelRequestFixedExpense(models.Model):
         string="Unit Price",
         required=True,
     )
-    final_price_unit = fields.Float(
+    approve_price_unit = fields.Float(
         string="Approved Price Unit",
         readonly=True,
     )
@@ -57,6 +57,10 @@ class HrTravelRequestFixedExpense(models.Model):
         string="Qty",
         required=True,
         default=1.0,
+    )
+    approve_quantity = fields.Float(
+        string="Approve Qty",
+        readonly=True,
     )
     uom_id = fields.Many2one(
         string="UoM",
@@ -70,13 +74,10 @@ class HrTravelRequestFixedExpense(models.Model):
         compute="_compute_price_subtotal",
         store=True,
     )
-    realization_method = fields.Selection(
+    realization_method_id = fields.Many2one(
         string="Realization Method",
-        selection=[
-            ("manual", "Manual Procurement"),
-        ],
+        comodel_name="hr.travel_request_realization_method",
         required=True,
-        default="manual",
     )
     type_id = fields.Many2one(
         string="Type",
@@ -88,13 +89,19 @@ class HrTravelRequestFixedExpense(models.Model):
     @api.onchange(
         "price_unit",
     )
-    def onchange_final_price_unit(self):
-        self.final_price_unit = self.price_unit
+    def onchange_approve_price_unit(self):
+        self.approve_price_unit = self.price_unit
+
+    @api.onchange(
+        "quantity",
+    )
+    def onchange_approve_quantity(self):
+        self.approve_quantity = self.quantity
 
     @api.onchange(
         "product_id",
         "pricelist_id",
-        "quantity",
+        "approve_quantity",
     )
     def onchange_price_unit(self):
         result = 0.0
@@ -102,7 +109,7 @@ class HrTravelRequestFixedExpense(models.Model):
                 self.pricelist_id:
             result = self.pricelist_id.get_product_price(
                 product=self.product_id,
-                quantity=self.quantity,
+                quantity=self.approve_quantity,
                 partner=False,
                 date=False,
                 uom_id=False,

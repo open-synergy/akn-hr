@@ -3,13 +3,13 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
 <odoo>
-<record id="hr_approve_daily_expense_view_form" model="ir.ui.view">
-    <field name="name">hr.approve_daily_expense form</field>
-    <field name="model">hr.approve_daily_expense</field>
+<record id="hr_approve_advance_settlement_view_form" model="ir.ui.view">
+    <field name="name">hr.approve_advance_settlement form</field>
+    <field name="model">hr.approve_advance_settlement</field>
     <field name="arch" type="xml">
         <form>
             <group name="group_1" colspan="4" col="2">
-                <field name="request_id" invisible="1"/>
+                <field name="settlement_id" invisible="1"/>
                 <field name="currency_id" invisible="1"/>
             </group>
             <group name="group_2" colspan="4" col="2">
@@ -32,14 +32,14 @@
     </field>
 </record>
 
-<record id="hr_approve_daily_expense_view_action" model="ir.actions.act_window">
-    <field name="name">Change Approved Price Unit</field>
+<record id="hr_approve_advance_settlement_view_action" model="ir.actions.act_window">
+    <field name="name">Change Approved Price Unit/Quantity</field>
     <field name="type">ir.actions.act_window</field>
-    <field name="res_model">hr.approve_daily_expense</field>
+    <field name="res_model">hr.approve_advance_settlement</field>
     <field name="view_type">form</field>
     <field name="view_mode">form</field>
     <field name="target">new</field>
-    <field name="view_id" ref="hr_approve_daily_expense_view_form"/>
+    <field name="view_id" ref="hr_approve_advance_settlement_view_form"/>
 </record>
 
 </odoo>

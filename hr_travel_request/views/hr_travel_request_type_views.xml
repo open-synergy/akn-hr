@@ -36,6 +36,7 @@
                     <field name="code"/>
                     <field name="active"/>
                     <field name="sequence_id"/>
+                    <field name="allowed_realization_method_ids" widget="many2many_tags"/>
                 </group>
                 <notebook>
                     <page name="transportation_expense" string="Transportation Expenses">
@@ -47,7 +48,7 @@
                                     <field name="round_trip"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>
@@ -60,7 +61,7 @@
                                     <field name="product_id"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>
@@ -73,7 +74,7 @@
                                     <field name="product_id"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>

@@ -4,7 +4,7 @@
 
 {
     "name": "Employee Travel Request",
-    "version": "11.0.0.0.0",
+    "version": "11.0.0.1.0",
     "author": "Arkana, PT. Simetri Sinergi Indonesia",
     "license": "LGPL-3",
     "depends": [
@@ -16,11 +16,13 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "data/hr_travel_request_realization_method_data.xml",
         "menu.xml",
         "wizards/hr_approve_transportation_expense_views.xml",
         "wizards/hr_approve_daily_expense_views.xml",
         "wizards/hr_approve_fixed_expense_views.xml",
         "views/hr_travel_request_type_views.xml",
+        "views/hr_travel_request_realization_method_views.xml",
         "views/hr_travel_request_views.xml",
     ],
     "demo": [

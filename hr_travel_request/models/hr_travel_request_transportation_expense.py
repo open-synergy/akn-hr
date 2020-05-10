@@ -11,22 +11,22 @@ class HrTravelRequestTransportationExpense(models.Model):
 
     @api.depends(
         "final_quantity",
-        "final_price_unit",
+        "approve_price_unit",
     )
     @api.multi
     def _compute_price_subtotal(self):
         for document in self:
             document.price_subtotal = document.final_quantity * \
-                document.final_price_unit
+                document.approve_price_unit
 
     @api.depends(
         "round_trip",
-        "quantity",
+        "approve_quantity",
     )
     @api.multi
     def _compute_final_qty(self):
         for document in self:
-            result = document.quantity
+            result = document.approve_quantity
             if document.round_trip:
                 result *= 2
             document.final_quantity = result
@@ -65,7 +65,7 @@ class HrTravelRequestTransportationExpense(models.Model):
         string="Unit Price",
         required=True,
     )
-    final_price_unit = fields.Float(
+    approve_price_unit = fields.Float(
         string="Approved Price Unit",
         readonly=True,
     )
@@ -73,6 +73,10 @@ class HrTravelRequestTransportationExpense(models.Model):
         string="Qty",
         required=True,
         default=1.0,
+    )
+    approve_quantity = fields.Float(
+        string="Approve Qty",
+        readonly=True,
     )
     final_quantity = fields.Float(
         string="Final Qty.",
@@ -91,13 +95,10 @@ class HrTravelRequestTransportationExpense(models.Model):
         compute="_compute_price_subtotal",
         store=True,
     )
-    realization_method = fields.Selection(
+    realization_method_id = fields.Many2one(
         string="Realization Method",
-        selection=[
-            ("manual", "Manual Procurement"),
-        ],
+        comodel_name="hr.travel_request_realization_method",
         required=True,
-        default="manual",
     )
     type_id = fields.Many2one(
         string="Type",
@@ -109,8 +110,14 @@ class HrTravelRequestTransportationExpense(models.Model):
     @api.onchange(
         "price_unit",
     )
-    def onchange_final_price_unit(self):
-        self.final_price_unit = self.price_unit
+    def onchange_approve_price_unit(self):
+        self.approve_price_unit = self.price_unit
+
+    @api.onchange(
+        "quantity",
+    )
+    def onchange_approve_quantity(self):
+        self.approve_quantity = self.quantity
 
     @api.onchange(
         "product_id",

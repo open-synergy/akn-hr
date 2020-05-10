@@ -32,7 +32,7 @@ class HrAdvance(models.Model):
 
     @api.depends(
         "line_ids",
-        "line_ids.final_price_subtotal",
+        "line_ids.price_subtotal",
         "input_type",
         "final_amount_manual",
     )
@@ -42,7 +42,7 @@ class HrAdvance(models.Model):
             total = 0.0
             if document.input_type == "detail":
                 for line in document.line_ids:
-                    total += line.final_price_subtotal
+                    total += line.price_subtotal
             elif document.input_type == "general":
                 total = document.final_amount_manual
             document.amount_total = total
@@ -378,8 +378,6 @@ class HrAdvance(models.Model):
     def action_confirm(self):
         for document in self:
             document.write(document._prepare_confirm_data())
-            for line in document.line_ids:
-                line._reset_final_price_subtotal()
 
     @api.multi
     def action_approve(self):
