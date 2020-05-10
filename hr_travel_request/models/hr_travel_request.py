@@ -170,6 +170,13 @@ class HrTravelRequest(models.Model):
             ],
         },
     )
+    allowed_realization_method_ids = fields.Many2many(
+        string="Allowed Realization Methods",
+        comodel_name="hr.travel_request_realization_method",
+        related="type_id.allowed_realization_method_ids",
+        store=False,
+        readonly=True,
+    )
     allowed_pricelist_ids = fields.Many2many(
         string="Allowed Pricelists",
         comodel_name="product.pricelist",
@@ -349,21 +356,25 @@ class HrTravelRequest(models.Model):
     def action_confirm(self):
         for document in self:
             document.write(document._prepare_confirm_data())
+            document._run_realization_method_confirm_method()
 
     @api.multi
     def action_approve(self):
         for document in self:
             document.write(document._prepare_approve_data())
+            document._run_realization_method_approve_method()
 
     @api.multi
     def action_cancel(self):
         for document in self:
             document.write(document._prepare_cancel_data())
+            document._run_realization_method_cancel_method()
 
     @api.multi
     def action_restart(self):
         for document in self:
             document.write(document._prepare_restart_data())
+            document._run_realization_method_restart_method()
 
     @api.multi
     def _prepare_confirm_data(self):
@@ -406,6 +417,54 @@ class HrTravelRequest(models.Model):
         }
 
     @api.multi
+    def _run_realization_method_confirm_method(self):
+        self.ensure_one()
+        for method in self.allowed_realization_method_ids:
+            method_to_call = getattr(self, method.confirm_method)
+            method_to_call()
+
+    @api.multi
+    def _run_realization_method_approve_method(self):
+        self.ensure_one()
+        for method in self.allowed_realization_method_ids:
+            method_to_call = getattr(self, method.approve_method)
+            method_to_call()
+
+    @api.multi
+    def _run_realization_method_cancel_method(self):
+        self.ensure_one()
+        for method in self.allowed_realization_method_ids:
+            method_to_call = getattr(self, method.cancel_method)
+            method_to_call()
+
+    @api.multi
+    def _run_realization_method_restart_method(self):
+        self.ensure_one()
+        for method in self.allowed_realization_method_ids:
+            method_to_call = getattr(self, method.restart_method)
+            method_to_call()
+
+    @api.multi
+    def confirm_manual_procurement(self):
+        self.ensure_one()
+        pass
+
+    @api.multi
+    def approve_manual_procurement(self):
+        self.ensure_one()
+        pass
+
+    @api.multi
+    def cancel_manual_procurement(self):
+        self.ensure_one()
+        pass
+
+    @api.multi
+    def restart_manual_procurement(self):
+        self.ensure_one()
+        pass
+
+    @api.multi
     def unlink(self):
         strWarning = _("You can only delete data on draft state")
         for document in self:
@@ -438,13 +497,14 @@ class HrTravelRequest(models.Model):
                     "pricelist_id": self.pricelist_id.id,
                     "product_id": line.product_id.id,
                     "quantity": line.quantity,
-                    "realization_method": line.realization_method,
+                    "realization_method": line.realization_method_id.id,
                 }))
             self.update({"daily_expense_ids": result})
 
             for line in self.daily_expense_ids:
+                line.onchange_approve_quantity()
                 line.onchange_price_unit()
-                line.onchange_final_price_unit()
+                line.onchange_approve_price_unit()
 
     @api.onchange(
         "type_id",
@@ -462,13 +522,14 @@ class HrTravelRequest(models.Model):
                     "product_id": line.product_id.id,
                     "quantity": line.quantity,
                     "round_trip": line.round_trip,
-                    "realization_method": line.realization_method,
+                    "realization_method": line.realization_method_id.id,
                 }))
             self.update({"transportation_expense_ids": result})
 
             for line in self.transportation_expense_ids:
+                line.onchange_approve_quantity()
                 line.onchange_price_unit()
-                line.onchange_final_price_unit()
+                line.onchange_approve_price_unit()
 
     @api.onchange(
         "type_id",
@@ -485,16 +546,52 @@ class HrTravelRequest(models.Model):
                     "pricelist_id": self.pricelist_id.id,
                     "product_id": line.product_id.id,
                     "quantity": line.quantity,
-                    "realization_method": line.realization_method,
+                    "realization_method": line.realization_method_id.id,
                 }))
             self.update({"fixed_expense_ids": result})
 
             for line in self.fixed_expense_ids:
+                line.onchange_approve_quantity()
                 line.onchange_price_unit()
-                line.onchange_final_price_unit()
+                line.onchange_approve_price_unit()
 
     @api.onchange(
         "currency_id",
     )
     def onchange_pricelist_id(self):
         self.pricelist_id = False
+
+    @api.multi
+    def _check_realization_method(self, code):
+        self.ensure_one()
+        obj_method = self.env["hr.travel_request_realization_method"]
+        criteria = [
+            ("code", "=", code)
+        ]
+        methods = obj_method.search(criteria)
+        if len(methods) > 0:
+            method = methods[0]
+        else:
+            method = False
+
+        result = False
+
+        if method:
+            daily_expenses = self.daily_expense_ids.filtered(
+                lambda r: r.realization_method_id.id == method.id)
+            if len(daily_expenses) > 0:
+                result = True
+
+        if method and not result:
+            fixed_expenses = self.fixed_expense_ids.filtered(
+                lambda r: r.realization_method_id.id == method.id)
+            if len(fixed_expenses) > 0:
+                result = True
+
+        if method and not result:
+            transportation_expenses = self.transportation_expense_ids.filtered(
+                lambda r: r.realization_method_id.id == method.id)
+            if len(transportation_expenses) > 0:
+                result = True
+
+        return result

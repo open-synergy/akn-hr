@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="travel_request_realization_method_manual" model="hr.travel_request_realization_method">
+    <field name="name">Manual Procurement</field>
+    <field name="code">MP</field>
+    <field name="confirm_method">confirm_manual_procurement</field>
+    <field name="approve_method">approve_manual_procurement</field>
+    <field name="cancel_method">cancel_manual_procurement</field>
+    <field name="restart_method">restart_manual_procurement</field>
+</record>
+</odoo>

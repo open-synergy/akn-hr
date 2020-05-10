@@ -1,6 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_travel_request_type_all,hr.travel_request_type - all,model_hr_travel_request_type,,1,0,0,0
 access_hr_travel_request_type_employee,hr.travel_request_type - employee,model_hr_travel_request_type,base.group_user,1,1,1,1
+access_hr_travel_request_realization_method_all,hr.travel_request_realization_method - all,model_hr_travel_request_realization_method,,1,0,0,0
+access_hr_travel_request_realization_method_employee,hr.travel_request_realization_method - employee,model_hr_travel_request_realization_method,base.group_user,1,1,1,1
 access_hr_travel_request_all,hr.travel_request - all,model_hr_travel_request,,1,0,0,0
 access_hr_travel_request_employee,hr.travel_request - employee,model_hr_travel_request,base.group_user,1,1,1,1
 access_hr_travel_request_daily_expense_all,hr.travel_request_daily_expense - all,model_hr_travel_request_daily_expense,,1,0,0,0

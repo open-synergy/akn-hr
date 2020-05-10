@@ -17,7 +17,7 @@
             <field name="date_arrive"/>
             <field name="days_travel"/>
             <field name="depart_from"/>
-            <field name="arrive_to"/>            
+            <field name="arrive_to"/>
             <field name="currency_id" groups="base.group_multi_currency"/>
             <group name="dom_state" string="State">
                 <filter name="dom_draft" string="Draft" domain="[('state','=','draft')]"/>
@@ -128,6 +128,7 @@
                         <field name="employee_id" invisible="context.get('hide_employee',False)"/>
                         <field name="project_id"/>
                         <field name="type_id"/>
+                        <field name="allowed_realization_method_ids" widget="many2many_tags" invisible="1"/>
                         <field name="currency_id" groups="base.group_multi_currency"/>
                         <field name="allowed_pricelist_ids" widget="many2many_tags" invisible="1"/>
                         <field name="pricelist_id" domain="[('id','in',allowed_pricelist_ids)]"/>
@@ -164,13 +165,14 @@
                                     <field name="pricelist_id"/>
                                     <field name="product_id"/>
                                     <field name="price_unit"/>
-                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="approve_price_unit" force_save="1"/>
                                     <field name="quantity"/>
+                                    <field name="approve_quantity" force_save="1"/>
                                     <field name="round_trip"/>
                                     <field name="final_quantity"/>
                                     <field name="uom_id"/>
                                     <field name="price_subtotal"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>
@@ -186,13 +188,14 @@
                                     <field name="pricelist_id"/>
                                     <field name="product_id"/>
                                     <field name="price_unit"/>
-                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="approve_price_unit" force_save="1"/>
                                     <field name="days_travel" invisible="1"/>
                                     <field name="quantity"/>
+                                    <field name="approve_quantity" force_save="1"/>
                                     <field name="final_quantity"/>
                                     <field name="uom_id"/>
                                     <field name="price_subtotal"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>
@@ -208,11 +211,12 @@
                                     <field name="pricelist_id"/>
                                     <field name="product_id"/>
                                     <field name="price_unit"/>
-                                    <field name="final_price_unit" force_save="1"/>
+                                    <field name="approve_price_unit" force_save="1"/>
                                     <field name="quantity"/>
+                                    <field name="approve_quantity" force_save="1"/>
                                     <field name="uom_id"/>
                                     <field name="price_subtotal"/>
-                                    <field name="realization_method"/>
+                                    <field name="realization_method_id" domain="[('id','in',parent.allowed_realization_method_ids)]"/>
                                 </tree>
                             </field>
                         </group>

@@ -17,8 +17,10 @@
                     <tree editable="top" create="false" delete="false">
                         <field name="line_id" invisible="1" force_save="1"/>
                         <field name="product_id"/>
+                        <field name="quantity"/>
+                        <field name="approve_quantity"/>
                         <field name="price_unit"/>
-                        <field name="final_price_unit"/>
+                        <field name="approve_price_unit"/>
                     </tree>
                 </field>
             </group>

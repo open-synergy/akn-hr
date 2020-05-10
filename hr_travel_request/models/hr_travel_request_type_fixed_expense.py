@@ -36,11 +36,8 @@ class HrTravelRequestTypeFixedExpense(models.Model):
         store=True,
         readonly=True,
     )
-    realization_method = fields.Selection(
+    realization_method_id = fields.Many2one(
         string="Realization Method",
-        selection=[
-            ("manual", "Manual Procurement"),
-        ],
+        comodel_name="hr.travel_request_realization_method",
         required=True,
-        default="manual",
     )

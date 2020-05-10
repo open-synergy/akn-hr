@@ -39,7 +39,8 @@ class HrApproveTransportationExpense(models.TransientModel):
             for line in self.request_id.transportation_expense_ids:
                 result.append((0, 0, {
                     "line_id": line.id,
-                    "final_price_unit": line.price_unit,
+                    "approve_price_unit": line.approve_price_unit,
+                    "approve_quantity": line.approve_quantity,
                 }))
             self.update({"line_ids": result})
 
@@ -54,7 +55,8 @@ class HrApproveTransportationExpense(models.TransientModel):
         self.request_id.restart_validation()
         for line in self.line_ids:
             line.line_id.write({
-                "final_price_unit": line.final_price_unit,
+                "approve_price_unit": line.approve_price_unit,
+                "approve_quantity": line.approve_quantity,
             })
 
 
@@ -86,7 +88,17 @@ class HrApproveTransportationExpenseLine(models.TransientModel):
         store=False,
         readonly=True,
     )
-    final_price_unit = fields.Float(
+    approve_price_unit = fields.Float(
         string="Approved Price Unit",
+        required=True,
+    )
+    quantity = fields.Float(
+        string="Quantity",
+        related="line_id.quantity",
+        store=False,
+        readonly=True,
+    )
+    approve_quantity = fields.Float(
+        string="Approved Quantity",
         required=True,
     )

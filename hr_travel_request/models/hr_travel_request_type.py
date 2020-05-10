@@ -44,3 +44,10 @@ class HrTravelRequestType(models.Model):
         comodel_name="hr.travel_request_type_fixed_expense",
         inverse_name="type_id",
     )
+    allowed_realization_method_ids = fields.Many2many(
+        string="Allowed Realization Methods",
+        comodel_name="hr.travel_request_realization_method",
+        relation="rel_travel_request_type_2_realization_method",
+        column1="type_id",
+        column2="realization_method_id",
+    )

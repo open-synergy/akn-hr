@@ -5,6 +5,7 @@
 from . import (
     tier_definition,
     hr_travel_request_type,
+    hr_travel_request_realization_method,
     hr_travel_request_type_transportation_expense,
     hr_travel_request_type_daily_expense,
     hr_travel_request_type_fixed_expense,
