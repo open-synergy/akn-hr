@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<record id="hr_travel_request_type_view_form" model="ir.ui.view">
+    <field name="name">hr.travel_request_type form</field>
+    <field name="model">hr.travel_request_type</field>
+    <field name="inherit_id" ref="hr_travel_request.hr_travel_request_type_view_form"/>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//page[@name='note']" position="before">
+                <page name="cash_advance" string="Cash Advance Integration">
+                    <group name="cash_advance_1" colspan="4" col="2">
+                        <field name="cash_advance_type_id"/>
+                    </group>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+</odoo>
